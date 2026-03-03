@@ -1,0 +1,39 @@
+{
+    "name": "dlj",
+    "version": "1.0.0",
+    "description": "PKGj Downloader",
+    "license": "MIT",
+    "author": "Sylvie Rain",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "bin": {
+        "dlj": "./dist/cli.js"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "bun build.ts",
+        "dev": "bun --watch src/cli.ts"
+    },
+    "dependencies": {
+        "@clack/prompts": "^1.0.1",
+        "kleur": "^4.1.5"
+    },
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
+    },
+    "engines": {
+        "node": ">=18"
+    }
+}
