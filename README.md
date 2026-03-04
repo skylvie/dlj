@@ -1,4 +1,4 @@
-# dlj
+# DLj
 A CLI for downloading everything you can on [PKGj](https://github.com/blastrock/pkgj)
 
 ## Features
