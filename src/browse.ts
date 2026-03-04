@@ -7,6 +7,7 @@ import {
     type PkgEntry,
 } from "./catalog.ts";
 import { downloadPkg } from "./download.ts";
+import { decryptPkg } from "./decrypt.ts";
 import { fmtSize, regionColor, renderProgress } from "./format.ts";
 
 const MODES = Object.keys(MODE_LABELS) as Mode[];
@@ -174,10 +175,11 @@ async function runDownload(entry: PkgEntry, outDir: string): Promise<void> {
 
     let lastLine = "";
 
-    const destPath = await downloadPkg(entry, {
+    const pkgPath = await downloadPkg(entry, {
         outDir,
         onProgress(received, total) {
-            const line = "\r  " + renderProgress(received, total) + "  ";
+            const line = "\r  [dl] " + renderProgress(received, total) + "  ";
+
             if (line !== lastLine) {
                 process.stdout.write(line);
                 lastLine = line;
@@ -186,7 +188,22 @@ async function runDownload(entry: PkgEntry, outDir: string): Promise<void> {
     });
 
     process.stdout.write("\n");
-    p.log.success(`Saved to ${kleur.green(destPath)}`);
+    p.log.step("Decrypting…");
+
+    const zipPath = await decryptPkg(pkgPath, entry, {
+        outDir,
+        onProgress(received, total) {
+            const line = "\r  [dc] " + renderProgress(received, total) + "  ";
+
+            if (line !== lastLine) {
+                process.stdout.write(line);
+                lastLine = line;
+            }
+        },
+    });
+
+    process.stdout.write("\n");
+    p.log.success(`Saved to ${kleur.green(zipPath)}`);
 }
 
 export async function interactiveBrowse(outDir: string): Promise<void> {

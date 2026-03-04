@@ -2,6 +2,7 @@ import * as p from "@clack/prompts";
 import kleur from "kleur";
 import { fetchCatalog, MODE_LABELS, type Mode } from "./catalog.ts";
 import { downloadPkg } from "./download.ts";
+import { decryptPkg } from "./decrypt.ts";
 import { fmtSize, renderProgress } from "./format.ts";
 import { interactiveBrowse } from "./browse.ts";
 
@@ -119,17 +120,29 @@ async function cmdGet(url: string, outDir: string): Promise<void> {
         lastModified: "",
     };
 
-    const destPath = await downloadPkg(entry, {
+    const pkgPath = await downloadPkg(entry, {
         outDir,
         onProgress(received, total) {
             process.stdout.write(
-                "\r  " + renderProgress(received, total) + "  ",
+                "\r  [dl] " + renderProgress(received, total) + "  ",
             );
         },
     });
 
     process.stdout.write("\n");
-    p.log.success(`Saved to ${kleur.green(destPath)}`);
+    p.log.step("Decrypting…");
+
+    const zipPath = await decryptPkg(pkgPath, entry, {
+        outDir,
+        onProgress(received, total) {
+            process.stdout.write(
+                "\r  [dc] " + renderProgress(received, total) + "  ",
+            );
+        },
+    });
+
+    process.stdout.write("\n");
+    p.log.success(`Saved to ${kleur.green(zipPath)}`);
 }
 
 const { command, args, outDir } = parseArgs(process.argv.slice(2));
